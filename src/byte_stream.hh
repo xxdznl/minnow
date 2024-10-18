@@ -18,13 +18,30 @@ public:
   Writer& writer();
   const Writer& writer() const;
 
-  void set_error() { error_ = true; };       // Signal that the stream suffered an error.
-  bool has_error() const { return error_; }; // Has the stream had an error?
+  void set_error() { has_error_ = true; };       // Signal that the stream suffered an error.
+  bool has_error() const { return has_error_; }; // Has the stream had an error?
 
 protected:
   // Please add any additional state to the ByteStream here, and not to the Writer and Reader interfaces.
   uint64_t capacity_;
-  bool error_ {};
+  uint64_t pushed_;
+  uint64_t popped_;
+  bool has_error_ {};
+  bool is_closed_ {};
+  class StringQueue
+  {
+    std::string data_ {};
+    uint64_t popped_ { 0 };
+
+  public:
+    StringQueue() = default;
+    uint64_t size() const; // Size of the queue.
+    void push( char c );   // Push a single byte to the queue.
+    uint64_t pop(
+      uint64_t len ); // Pop specified number of bytes, and return the number of bytes that are popped successfully.
+    std::string_view peek() const; // Return a string_view of the queue.
+  } data_;
+
 };
 
 class Writer : public ByteStream
