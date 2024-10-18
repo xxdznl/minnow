@@ -20,7 +20,7 @@ Socket::Socket( const int domain, const int type, const int protocol )
 
 // construct from file descriptor
 //! \param[in] fd is the FileDescriptor from which to construct
-//! \param[in] domain is `fd`'s domain; throws std::runtime_error if wrong value is supplied
+//! \param[in] domain is `fd`'s domain; throws std::runtime_error if wrong value is supplied  
 //! \param[in] type is `fd`'s type; throws std::runtime_error if wrong value is supplied
 //! \param[in] protocol is `fd`'s protocol; throws std::runtime_error if wrong value is supplied
 Socket::Socket( FileDescriptor&& fd, int domain, int type, int protocol ) // NOLINT(*-swappable-parameters)

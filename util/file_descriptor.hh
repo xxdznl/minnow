@@ -31,9 +31,9 @@ class FileDescriptor
     T CheckSystemCall( std::string_view s_attempt, T return_value ) const;
 
     // An FDWrapper cannot be copied or moved
-    FDWrapper( const FDWrapper& other ) = delete;
+    FDWrapper( const FDWrapper& other ) = delete;//拷贝
     FDWrapper& operator=( const FDWrapper& other ) = delete;
-    FDWrapper( FDWrapper&& other ) = delete;
+    FDWrapper( FDWrapper&& other ) = delete;//移动构造函数
     FDWrapper& operator=( FDWrapper&& other ) = delete;
   };
 

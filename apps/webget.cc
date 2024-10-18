@@ -10,8 +10,22 @@ using namespace std;
 void get_URL( const string& host, const string& path )
 {
   cerr << "Function called: get_URL(" << host << ", " << path << ")\n";
-  cerr << "Warning: get_URL() has not been implemented yet.\n";
-
+  // cerr << "Warning: get_URL() has not been implemented yet.\n";
+  auto socket = TCPSocket();
+  socket.connect(Address(host,"http"));
+  auto write_line = [&]( std::string_view s ) {
+    socket.write( s );
+    socket.write( "\r\n" );
+  };
+  write_line( "GET " + path + " HTTP/1.1" );
+  write_line( "Host: " + host );
+  write_line( "Connection: close" );
+  write_line( "" );
+  std::string rbuffer;
+  while(!socket.eof()){
+    socket.read( rbuffer );
+    std::cout << rbuffer;
+  }
 }
 
 int main( int argc, char* argv[] )
@@ -20,7 +34,7 @@ int main( int argc, char* argv[] )
     if ( argc <= 0 ) {
       abort(); // For sticklers: don't try to access argv[0] if argc <= 0.
     }
-
+    
     auto args = span( argv, argc );
 
     // The program takes two command-line arguments: the hostname and "path" part of the URL.

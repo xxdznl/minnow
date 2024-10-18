@@ -44,7 +44,7 @@ FileDescriptor::FDWrapper::FDWrapper( int fd ) : fd_( fd )
   }
 
   const int flags = CheckSystemCall( "fcntl", fcntl( fd, F_GETFL ) ); // NOLINT(*-vararg)
-  non_blocking_ = flags & O_NONBLOCK;                                 // NOLINT(*-bitwise)
+  non_blocking_ = flags & O_NONBLOCK;    //检查是否被阻塞 true为非阻塞                            // NOLINT(*-bitwise)
 }
 
 void FileDescriptor::FDWrapper::close()
@@ -76,7 +76,7 @@ FileDescriptor::FileDescriptor( shared_ptr<FDWrapper> other_shared_ptr ) : inter
 // returns a copy of this FileDescriptor
 FileDescriptor FileDescriptor::duplicate() const
 {
-  return FileDescriptor { internal_fd_ };
+  return FileDescriptor { internal_fd_ }; //列表初始化
 }
 
 // buffer is the string to be read into
@@ -96,7 +96,7 @@ void FileDescriptor::read( string& buffer )
   }
 
   register_read();
-
+  //byte_read =0 到达文件末尾
   if ( bytes_read == 0 ) {
     internal_fd_->eof_ = true;
   }
@@ -194,12 +194,12 @@ void FileDescriptor::set_blocking( bool blocking )
 {
   int flags = CheckSystemCall( "fcntl", fcntl( fd_num(), F_GETFL ) ); // NOLINT(*-vararg)
   if ( blocking ) {
-    flags ^= ( flags & O_NONBLOCK ); // NOLINT(*-bitwise)
+    flags ^= ( flags & O_NONBLOCK ); // NOLINT(*-bitwise) set true 1 1 相同为0 不同为1(原本是阻塞,由于异或还是阻塞) 如果是非阻塞 设置为阻塞
   } else {
-    flags |= O_NONBLOCK; // NOLINT(*-bitwise)
+    flags |= O_NONBLOCK; // NOLINT(*-bitwise) 不管原本是不是阻塞 设置为非阻塞 0 1,1  1 1,1
   }
 
   CheckSystemCall( "fcntl", fcntl( fd_num(), F_SETFL, flags ) ); // NOLINT(*-vararg)
 
-  internal_fd_->non_blocking_ = not blocking;
+  internal_fd_->non_blocking_ = not blocking; //非阻塞状态与blocking相反
 }
